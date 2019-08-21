@@ -10,3 +10,4 @@ type Participant struct {
 func (p Participant) ToLedgerBinary() ([]byte,error) {
 	return json.Marshal(p)
 }
+

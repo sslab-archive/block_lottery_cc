@@ -50,6 +50,9 @@ type DrawLotteryRequest struct {
 	EventUUID           string `json:"eventUUID"`
 	BlockHash           string `json:"blockHash"`
 	ServiceProviderHash string `json:"serviceProviderHash"`
+
+	SubmitterID      string     `json:"submitterID"`
+	SubmitterAddress string     `json:"submitterAddress"`
 }
 
 type VerifyLotteryRequest struct {

@@ -287,7 +287,14 @@ func (l *LotteryChaincode) drawLotteryEvent(stubInterface shim.ChaincodeStubInte
 		return shim.Error(err.Error())
 	}
 
-	err = event.Draw(txTimestamp.Seconds)
+	txInfo := Transaction{
+		ID:               stubInterface.GetTxID(),
+		SubmitterID:      drawLotteryRequest.SubmitterID,
+		SubmitterAddress: drawLotteryRequest.SubmitterAddress,
+		Timestamp:        txTimestamp.Seconds,
+	}
+
+	err = event.Draw(txInfo)
 	if err != nil {
 		return shim.Error(err.Error())
 	}

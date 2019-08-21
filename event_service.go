@@ -51,6 +51,7 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 	endKey := "event_"+strconv.FormatInt(endDate,10)
 
 	eventIter, err := stubInterface.GetStateByRange(startKey,endKey)
+	defer eventIter.Close()
 	if err !=nil{
 		return nil, err
 	}

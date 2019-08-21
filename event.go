@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/rs/xid"
-	"time"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"encoding/json"
 	"bytes"
-	"strconv"
+	"encoding/json"
 	"errors"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/rs/xid"
+	"strconv"
+	"time"
 )
 
 type Status string
@@ -132,8 +132,54 @@ func (e *Event) Participate(participant Participant, txTimestamp int64) error {
 	return nil
 }
 
-func (e *Event) Draw(txTimestamp int64) error {
+func (e *Event) Draw(tx Transaction) error {
+	if tx.Timestamp < e.DeadlineTime{
+		return errors.New("deadline is not passed")
+	}
 
+	if e.Status != STATUS_REGISTERD{
+		return errors.New("status is not registered. check is removed or already drawn")
+	}
+	e.Status = STATUS_DRAWN
+	concatSeed := e.SeedHash + "_PLUS_" + e.ServiceProviderHash
+
+	var usingParticipants []Participant
+
+	if int64(len(e.Participants)) > e.MaxParticipant {
+		usingParticipants = e.Participants[0:e.MaxParticipant]
+	} else {
+		usingParticipants = e.Participants
+	}
+	shuffledParticipant := FisherYatesShuffle(usingParticipants, concatSeed)
+
+	totalPrizeNum := int64(0)
+	for _, prize := range e.Prizes {
+		totalPrizeNum += prize.WinnerNum
+	}
+
+	// # of participant < # of winner
+	if totalPrizeNum > int64(len(shuffledParticipant)) {
+		participantIdx := 0
+		for _, prize := range e.Prizes {
+			prize.Winners = make([]Participant, 0)
+			if int64(len(shuffledParticipant)-participantIdx) >= prize.WinnerNum {
+				prize.Winners = shuffledParticipant[participantIdx : participantIdx+int(prize.WinnerNum)]
+				participantIdx += int(prize.WinnerNum)
+			} else {
+				for i := participantIdx; i < len(shuffledParticipant); i++ {
+					prize.Winners = append(prize.Winners, shuffledParticipant[i])
+				}
+				break
+			}
+		}
+	} else {
+		passedIdx := 0
+		for _, prize := range e.Prizes {
+			prize.Winners = shuffledParticipant[passedIdx : passedIdx+int(prize.WinnerNum)]
+			passedIdx+=int(prize.WinnerNum)
+		}
+	}
+	return nil
 }
 
 func (e *Event) containParticipant(participantUUID string) bool {
