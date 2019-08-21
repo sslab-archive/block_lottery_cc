@@ -127,3 +127,14 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+
+	case QUERY_BY_DATE_RANGE:
+		return nil, errors.New("query by date range is not impl")
+	case QUERY_BY_PARTICIPANT_ID:
+		return nil, errors.New("query by participant id is not impl")
+
+	default:
+		return nil, errors.New("unknown query type")
+	}
