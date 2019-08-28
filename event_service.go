@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
-	"strconv"
 )
 
 func LoadEventByUUID(stubInterface shim.ChaincodeStubInterface, UUID string) (*Event, error) {
@@ -47,32 +46,31 @@ func LoadEventByUUID(stubInterface shim.ChaincodeStubInterface, UUID string) (*E
 }
 
 func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate int64, endDate int64) ([]Event, error) {
-	startKey := "event_"+strconv.FormatInt(startDate,10)
-	endKey := "event_"+strconv.FormatInt(endDate,10)
+	startKey := MakeDateKeyByTimestamp(startDate)
+	endKey := MakeDateKeyByTimestamp(endDate)
 
-	eventIter, err := stubInterface.GetStateByRange(startKey,endKey)
+	eventIter, err := stubInterface.GetStateByRange(startKey, endKey)
 	defer eventIter.Close()
-	if err !=nil{
+	if err != nil {
 		return nil, err
 	}
 
-	events := make([]Event,0)
-	for eventIter.HasNext(){
-		kv,err := eventIter.Next()
-		if err!= nil{
+	events := make([]Event, 0)
+	for eventIter.HasNext() {
+		kv, err := eventIter.Next()
+		if err != nil {
 			return nil, err
 		}
 
 		event := Event{}
-		err = json.Unmarshal(kv.Value,event)
+		err = json.Unmarshal(kv.Value, event)
 
-		if err !=nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
 
 		events = append(events, event)
 	}
 
-	return events,nil
+	return events, nil
 }
-

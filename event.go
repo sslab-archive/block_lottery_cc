@@ -7,6 +7,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/rs/xid"
 	"time"
+	"strconv"
 )
 
 type Status string
@@ -231,5 +232,5 @@ func MakeKeyByUUID(UUID string) string {
 }
 
 func MakeDateKeyByTimestamp(timestamp int64) string {
-	return "event_createAt_" + string(timestamp)
+	return "event_createAt_" + strconv.FormatInt(timestamp,10)
 }
