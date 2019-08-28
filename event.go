@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/rs/xid"
-	"strconv"
 	"time"
 )
 
@@ -26,7 +25,7 @@ const (
 )
 
 type Prize struct {
-	UUID      string        `json:"uuid"`
+	UUID      string        `json:"UUID"`
 	Title     string        `json:"title"`
 	Memo      string        `json:"memo"`
 	WinnerNum int64         `json:"winnerNum"`
@@ -35,7 +34,7 @@ type Prize struct {
 
 type Event struct {
 	// event data
-	UUID           string        `json:"uuid"`
+	UUID           string        `json:"UUID"`
 	EventName      string        `json:"eventName"` // must be UUID
 	Status         Status        `json:"status"`
 	CreateTime     int64         `json:"createTime"`     // create timestamp
@@ -60,7 +59,11 @@ type Event struct {
 }
 
 func (e *Event) GetKey() string {
-	return "event_" + strconv.FormatInt(e.CreateTime, 10) + "_" + e.UUID
+	return MakeKeyByUUID(e.UUID)
+}
+
+func (e *Event) GetDateKey() string {
+	return MakeDateKeyByTimestamp(e.CreateTime)
 }
 
 func (e *Event) SaveToLedger(stubInterface shim.ChaincodeStubInterface) error {
@@ -71,6 +74,15 @@ func (e *Event) SaveToLedger(stubInterface shim.ChaincodeStubInterface) error {
 
 	// save e information if e is changed
 	val, err := stubInterface.GetState(e.GetKey())
+
+	// val == nil -> new event data
+	if val == nil {
+		err = stubInterface.PutState(e.GetDateKey(), []byte(e.UUID))
+		if err != nil {
+			return err
+		}
+	}
+
 	if bytes.Compare(b, val) != 0 {
 		err = stubInterface.PutState(e.GetKey(), b)
 		if err != nil {
@@ -133,11 +145,11 @@ func (e *Event) Participate(participant Participant, txTimestamp int64) error {
 }
 
 func (e *Event) Draw(tx Transaction) error {
-	if tx.Timestamp < e.DeadlineTime{
+	if tx.Timestamp < e.DeadlineTime {
 		return errors.New("deadline is not passed")
 	}
 
-	if e.Status != STATUS_REGISTERD{
+	if e.Status != STATUS_REGISTERD {
 		return errors.New("status is not registered. check is removed or already drawn")
 	}
 	e.Status = STATUS_DRAWN
@@ -176,7 +188,7 @@ func (e *Event) Draw(tx Transaction) error {
 		passedIdx := 0
 		for _, prize := range e.Prizes {
 			prize.Winners = shuffledParticipant[passedIdx : passedIdx+int(prize.WinnerNum)]
-			passedIdx+=int(prize.WinnerNum)
+			passedIdx += int(prize.WinnerNum)
 		}
 	}
 	return nil
@@ -193,8 +205,8 @@ func (e *Event) containParticipant(participantUUID string) bool {
 
 func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 	requestPrize := request.Prizes
-	for _, prize := range requestPrize {
-		prize.UUID = xid.New().String()
+	for idx := range requestPrize {
+		requestPrize[idx].UUID = xid.New().String()
 	}
 	return Event{
 		UUID:                xid.New().String(),
@@ -203,7 +215,7 @@ func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 		CreateTime:          time.Now().Unix(),
 		DeadlineTime:        request.DeadlineTime,
 		MaxParticipant:      request.MaxParticipant,
-		Participants:        nil,
+		Participants:        make([]Participant, 0),
 		DrawTypes:           request.DrawTypes,
 		Prizes:              requestPrize,
 		TargetBlock:         request.TargetBlock,
@@ -212,4 +224,12 @@ func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 		EventCreateTx:       createEventTX,
 		DrawTx:              Transaction{},
 	}
+}
+
+func MakeKeyByUUID(UUID string) string {
+	return "event_UUID_" + UUID
+}
+
+func MakeDateKeyByTimestamp(timestamp int64) string {
+	return "event_createAt_" + string(timestamp)
 }

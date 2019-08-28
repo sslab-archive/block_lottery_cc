@@ -159,7 +159,7 @@ func (l *LotteryChaincode) queryLotteryEvent(stubInterface shim.ChaincodeStubInt
 			return ErrArgsUnmarshal
 		}
 
-		event, err := LoadEventByKey(stubInterface, queryByEventIDRequest.EventUUID)
+		event, err := LoadEventByUUID(stubInterface, queryByEventIDRequest.EventUUID)
 		if err != nil {
 			return shim.Error(err.Error())
 		}
@@ -213,7 +213,7 @@ func (l *LotteryChaincode) participateLotteryEvent(stubInterface shim.ChaincodeS
 		return ErrArgsUnmarshal
 	}
 
-	event, err := LoadEventByKey(stubInterface, participateLotteryRequest.EventUUID)
+	event, err := LoadEventByUUID(stubInterface, participateLotteryRequest.EventUUID)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -258,7 +258,7 @@ func (l *LotteryChaincode) drawLotteryEvent(stubInterface shim.ChaincodeStubInte
 		return ErrArgsUnmarshal
 	}
 
-	event, err := LoadEventByKey(stubInterface, drawLotteryRequest.EventUUID)
+	event, err := LoadEventByUUID(stubInterface, drawLotteryRequest.EventUUID)
 	if err != nil {
 		return shim.Error(err.Error())
 	}

@@ -6,9 +6,9 @@ import (
 	"strconv"
 )
 
-func LoadEventByKey(stubInterface shim.ChaincodeStubInterface, key string) (*Event, error) {
+func LoadEventByUUID(stubInterface shim.ChaincodeStubInterface, UUID string) (*Event, error) {
 	event := &Event{}
-	b, err := stubInterface.GetState(key)
+	b, err := stubInterface.GetState(MakeKeyByUUID(UUID))
 	if b == nil {
 		return &Event{}, nil
 	}
@@ -75,3 +75,4 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 
 	return events,nil
 }
+
