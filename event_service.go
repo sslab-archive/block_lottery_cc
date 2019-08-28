@@ -51,8 +51,8 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 	eventIter, err := stubInterface.GetQueryResult(fmt.Sprintf(`{
    "selector": {
       "createTime": {
-         "$gt": %d,
-         "$lt": %d
+         "$gte": %d,
+         "$lte": %d
       }
    }
 }`, startDate, endDate))
@@ -68,14 +68,14 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 			return nil, err
 		}
 
-		event := Event{}
+		event := &Event{}
 		err = json.Unmarshal(kv.Value, event)
 
 		if err != nil {
 			return nil, err
 		}
 
-		events = append(events, event)
+		events = append(events, *event)
 	}
 
 	return events, nil
