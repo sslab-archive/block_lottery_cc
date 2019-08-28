@@ -39,7 +39,7 @@ func (l *LotteryChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 	logger.Info("Blockchain Lottery Chaincode! invoke method###")
 	function, args := stub.GetFunctionAndParameters()
 	logger.Info("Invoked method is " + args[0])
-
+	logger.Info(args)
 	if function != "invoke" {
 		return shim.Error("Unknown function call: " + function)
 	}
@@ -78,8 +78,11 @@ func (l *LotteryChaincode) createLotteryEvent(stubInterface shim.ChaincodeStubIn
 
 	// unmarshal request args
 	createLotteryRequest := &CreateLotteryRequest{}
+
 	err := json.Unmarshal([]byte(args[1]), createLotteryRequest)
+	logger.Debug(createLotteryRequest)
 	if err != nil {
+		logger.Error(err)
 		return ErrArgsUnmarshal
 	}
 
@@ -112,6 +115,7 @@ func (l *LotteryChaincode) createLotteryEvent(stubInterface shim.ChaincodeStubIn
 	// make event object
 	txTimestamp, err := stubInterface.GetTxTimestamp()
 	if err != nil {
+		logger.Error(err)
 		return shim.Error(err.Error())
 	}
 
@@ -126,11 +130,13 @@ func (l *LotteryChaincode) createLotteryEvent(stubInterface shim.ChaincodeStubIn
 
 	err = event.SaveToLedger(stubInterface)
 	if err != nil {
+		logger.Error(err)
 		return shim.Error(err.Error())
 	}
 
 	responseData, err := json.Marshal(event)
 	if err != nil {
+		logger.Error(err)
 		return shim.Error(err.Error())
 	}
 
