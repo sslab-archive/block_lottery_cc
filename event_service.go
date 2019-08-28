@@ -62,8 +62,13 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 			return nil, err
 		}
 
+		eventBytes, err := stubInterface.GetState(string(kv.Value))
+		if eventBytes == nil || err != nil {
+			logger.Error(""+string(eventBytes)+","+err.Error())
+			continue
+		}
 		event := Event{}
-		err = json.Unmarshal(kv.Value, event)
+		err = json.Unmarshal(eventBytes, event)
 
 		if err != nil {
 			return nil, err
