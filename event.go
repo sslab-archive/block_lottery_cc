@@ -7,8 +7,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/rs/xid"
 	"time"
-	"strconv"
-)
+	)
 
 type Status string
 type DrawType string
@@ -31,6 +30,10 @@ type Prize struct {
 	Memo      string        `json:"memo"`
 	WinnerNum int64         `json:"winnerNum"`
 	Winners   []Participant `json:"winners"`
+}
+type EventKeyInfo struct {
+	UUID       string `json:"UUID"`
+	CreateTime int64  `json:"createTime"`
 }
 
 type Event struct {
@@ -63,10 +66,6 @@ func (e *Event) GetKey() string {
 	return MakeKeyByUUID(e.UUID)
 }
 
-func (e *Event) GetDateKey() string {
-	return MakeDateKeyByTimestamp(e.CreateTime)
-}
-
 func (e *Event) SaveToLedger(stubInterface shim.ChaincodeStubInterface) error {
 	b, err := e.ToLedgerBinary()
 	if err != nil {
@@ -75,14 +74,6 @@ func (e *Event) SaveToLedger(stubInterface shim.ChaincodeStubInterface) error {
 
 	// save e information if e is changed
 	val, err := stubInterface.GetState(e.GetKey())
-
-	// val == nil -> new event data
-	if val == nil {
-		err = stubInterface.PutState(e.GetDateKey(), []byte(e.UUID))
-		if err != nil {
-			return err
-		}
-	}
 
 	if bytes.Compare(b, val) != 0 {
 		err = stubInterface.PutState(e.GetKey(), b)
@@ -229,8 +220,4 @@ func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 
 func MakeKeyByUUID(UUID string) string {
 	return "event_UUID_" + UUID
-}
-
-func MakeDateKeyByTimestamp(timestamp int64) string {
-	return "event_createAt_" + strconv.FormatInt(timestamp,10)
 }

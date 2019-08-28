@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
+	"fmt"
 )
 
 func LoadEventByUUID(stubInterface shim.ChaincodeStubInterface, UUID string) (*Event, error) {
@@ -46,10 +47,15 @@ func LoadEventByUUID(stubInterface shim.ChaincodeStubInterface, UUID string) (*E
 }
 
 func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate int64, endDate int64) ([]Event, error) {
-	startKey := MakeDateKeyByTimestamp(startDate)
-	endKey := MakeDateKeyByTimestamp(endDate)
 
-	eventIter, err := stubInterface.GetStateByRange(startKey, endKey)
+	eventIter, err := stubInterface.GetQueryResult(fmt.Sprintf(`{
+   "selector": {
+      "createTime": {
+         "$gt": %d,
+         "$lt": %d
+      }
+   }
+}`, startDate, endDate))
 	defer eventIter.Close()
 	if err != nil {
 		return nil, err
@@ -64,7 +70,7 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 
 		eventBytes, err := stubInterface.GetState(string(kv.Value))
 		if eventBytes == nil || err != nil {
-			logger.Error(""+string(eventBytes)+","+err.Error())
+			logger.Error("" + string(eventBytes) + "," + err.Error())
 			continue
 		}
 		event := Event{}
