@@ -148,6 +148,7 @@ func (l *LotteryChaincode) queryLotteryEvent(stubInterface shim.ChaincodeStubInt
 	queryLotteryRequest := &QueryLotteryRequest{}
 	err := json.Unmarshal([]byte(args[1]), queryLotteryRequest)
 	if err != nil {
+		logger.Error(err)
 		return ErrArgsUnmarshal
 	}
 
@@ -175,6 +176,7 @@ func (l *LotteryChaincode) queryLotteryEvent(stubInterface shim.ChaincodeStubInt
 		queryByDateRangeRequest := &QueryLotteryByDateRangeRequest{}
 		err := json.Unmarshal([]byte(args[1]), queryByDateRangeRequest)
 		if err != nil {
+			logger.Error(err)
 			return ErrArgsUnmarshal
 		}
 
@@ -185,6 +187,7 @@ func (l *LotteryChaincode) queryLotteryEvent(stubInterface shim.ChaincodeStubInt
 		)
 
 		if err != nil {
+			logger.Error(err)
 			return shim.Error(err.Error())
 		}
 
