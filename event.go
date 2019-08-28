@@ -29,7 +29,7 @@ type Prize struct {
 	UUID      string        `json:"UUID"`
 	Title     string        `json:"title"`
 	Memo      string        `json:"memo"`
-	WinnerNum int64         `json:"winnerNum,string"`
+	WinnerNum int64         `json:"winnerNum"`
 	Winners   []Participant `json:"winners"`
 }
 
@@ -38,9 +38,9 @@ type Event struct {
 	UUID           string        `json:"UUID"`
 	EventName      string        `json:"eventName"` // must be UUID
 	Status         Status        `json:"status"`
-	CreateTime     int64         `json:"createTime,string"`     // create timestamp
-	DeadlineTime   int64         `json:"deadlineTime,string"`   // UNIX timestamp
-	MaxParticipant int64         `json:"maxParticipant,string"` // Max number of members
+	CreateTime     int64         `json:"createTime"`     // create timestamp
+	DeadlineTime   int64         `json:"deadlineTime"`   // UNIX timestamp
+	MaxParticipant int64         `json:"maxParticipant"` // Max number of members
 	Participants   []Participant `json:"participants"`
 	DrawTypes      []DrawType    `json:"drawTypes"`
 	Prizes         []Prize       `json:"prizes"`
