@@ -7,7 +7,8 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/rs/xid"
 	"time"
-	)
+	"strconv"
+)
 
 type Status string
 type DrawType string
@@ -160,27 +161,29 @@ func (e *Event) Draw(tx Transaction) error {
 	for _, prize := range e.Prizes {
 		totalPrizeNum += prize.WinnerNum
 	}
+	logger.Debug("total winner num : "+strconv.FormatInt(totalPrizeNum,10))
 
 	// # of participant < # of winner
 	if totalPrizeNum > int64(len(shuffledParticipant)) {
+		logger.Debug("winner is too big...")
 		participantIdx := 0
-		for _, prize := range e.Prizes {
-			prize.Winners = make([]Participant, 0)
-			if int64(len(shuffledParticipant)-participantIdx) >= prize.WinnerNum {
-				prize.Winners = shuffledParticipant[participantIdx : participantIdx+int(prize.WinnerNum)]
-				participantIdx += int(prize.WinnerNum)
+		for idx := range e.Prizes {
+			e.Prizes[idx].Winners = make([]Participant, 0)
+			if int64(len(shuffledParticipant)-participantIdx) >= e.Prizes[idx].WinnerNum {
+				e.Prizes[idx].Winners = shuffledParticipant[participantIdx : participantIdx+int(e.Prizes[idx].WinnerNum)]
+				participantIdx += int(e.Prizes[idx].WinnerNum)
 			} else {
 				for i := participantIdx; i < len(shuffledParticipant); i++ {
-					prize.Winners = append(prize.Winners, shuffledParticipant[i])
+					e.Prizes[idx].Winners = append(e.Prizes[idx].Winners, shuffledParticipant[i])
 				}
 				break
 			}
 		}
 	} else {
 		passedIdx := 0
-		for _, prize := range e.Prizes {
-			prize.Winners = shuffledParticipant[passedIdx : passedIdx+int(prize.WinnerNum)]
-			passedIdx += int(prize.WinnerNum)
+		for idx := range e.Prizes {
+			e.Prizes[idx].Winners = shuffledParticipant[passedIdx : passedIdx+int(e.Prizes[idx].WinnerNum)]
+			passedIdx += int(e.Prizes[idx].WinnerNum)
 		}
 	}
 	return nil
