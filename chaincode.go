@@ -308,6 +308,7 @@ func (l *LotteryChaincode) drawLotteryEvent(stubInterface shim.ChaincodeStubInte
 		return shim.Error(err.Error())
 	}
 
+	event.DrawTx = txInfo
 	err = event.SaveToLedger(stubInterface)
 	if err != nil {
 		return shim.Error(err.Error())
