@@ -42,6 +42,7 @@ type Event struct {
 	UUID           string        `json:"UUID"`
 	EventName      string        `json:"eventName"` // must be UUID
 	Status         Status        `json:"status"`
+	Contents       string        `json:"contents"`
 	CreateTime     int64         `json:"createTime"`     // create timestamp
 	DeadlineTime   int64         `json:"deadlineTime"`   // UNIX timestamp
 	MaxParticipant int64         `json:"maxParticipant"` // Max number of members
@@ -161,7 +162,7 @@ func (e *Event) Draw(tx Transaction) error {
 	for _, prize := range e.Prizes {
 		totalPrizeNum += prize.WinnerNum
 	}
-	logger.Debug("total winner num : "+strconv.FormatInt(totalPrizeNum,10))
+	logger.Debug("total winner num : " + strconv.FormatInt(totalPrizeNum, 10))
 
 	// # of participant < # of winner
 	if totalPrizeNum > int64(len(shuffledParticipant)) {

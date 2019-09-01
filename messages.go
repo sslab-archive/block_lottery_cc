@@ -9,7 +9,8 @@ const (
 )
 
 type CreateLotteryRequest struct {
-	EventName        string     `json:"eventName"`      // must be UUID
+	EventName        string     `json:"eventName"` // must be UUID
+	Contents         string     `json:"contents"`
 	DeadlineTime     int64      `json:"deadlineTime"`   // UNIX timestamp
 	MaxParticipant   int64      `json:"maxParticipant"` // Max number of members
 	DrawTypes        []DrawType `json:"drawTypes"`
@@ -51,8 +52,8 @@ type DrawLotteryRequest struct {
 	BlockHash           string `json:"blockHash"`
 	ServiceProviderHash string `json:"serviceProviderHash"`
 
-	SubmitterID      string     `json:"submitterID"`
-	SubmitterAddress string     `json:"submitterAddress"`
+	SubmitterID      string `json:"submitterID"`
+	SubmitterAddress string `json:"submitterAddress"`
 }
 
 type VerifyLotteryRequest struct {
