@@ -208,6 +208,7 @@ func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 		UUID:                xid.New().String(),
 		EventName:           request.EventName,
 		Status:              STATUS_REGISTERD,
+		Contents:            request.Contents,
 		CreateTime:          time.Now().Unix(),
 		DeadlineTime:        request.DeadlineTime,
 		MaxParticipant:      request.MaxParticipant,
