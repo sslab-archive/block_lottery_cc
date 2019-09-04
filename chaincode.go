@@ -234,6 +234,12 @@ func (l *LotteryChaincode) participateLotteryEvent(stubInterface shim.ChaincodeS
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	participateLotteryRequest.Participant.ParticipateTx = Transaction{
+		ID:               stubInterface.GetTxID(),
+		SubmitterID:      participateLotteryRequest.SubmitterID,
+		SubmitterAddress: participateLotteryRequest.SubmitterAddress,
+		Timestamp:        txTimestamp.Seconds,
+	}
 
 	err = event.Participate(participateLotteryRequest.Participant, txTimestamp.Seconds)
 	if err != nil {

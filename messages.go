@@ -45,6 +45,9 @@ type QueryLotteryByDateRangeRequest struct {
 type ParticipateLotteryRequest struct {
 	EventUUID   string      `json:"eventUUID"`
 	Participant Participant `json:"participant"`
+
+	SubmitterID      string `json:"submitterID"`
+	SubmitterAddress string `json:"submitterAddress"`
 }
 
 type DrawLotteryRequest struct {
