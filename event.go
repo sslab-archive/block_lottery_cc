@@ -147,7 +147,8 @@ func (e *Event) Draw(tx Transaction) error {
 		return errors.New("status is not registered. check is removed or already drawn")
 	}
 	e.Status = STATUS_DRAWN
-	concatSeed := e.SeedHash + "_PLUS_" + e.ServiceProviderHash
+	concatSeed := e.TargetBlock.Hash + "_PLUS_" + e.ServiceProviderHash
+	e.SeedHash = concatSeed
 
 	var usingParticipants []Participant
 

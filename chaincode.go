@@ -276,15 +276,16 @@ func (l *LotteryChaincode) drawLotteryEvent(stubInterface shim.ChaincodeStubInte
 	}
 
 	// check required input seed
-	for _,drawType := range event.DrawTypes{
+	for _, drawType := range event.DrawTypes {
 		switch drawType {
 		case DRAW_BLOCK_HASH:
-			if drawLotteryRequest.BlockHash == ""{
+			if drawLotteryRequest.TargetBlock.Hash == "" {
 				return ErrArgsRequired("blockHash")
 			}
-			event.TargetBlock.Hash = drawLotteryRequest.BlockHash
+			event.TargetBlock.Hash = drawLotteryRequest.TargetBlock.Hash
+			event.TargetBlock.Timestamp = drawLotteryRequest.TargetBlock.Timestamp
 		case DRAW_SERVICE_PROVIDER_HASH:
-			if drawLotteryRequest.ServiceProviderHash == ""{
+			if drawLotteryRequest.ServiceProviderHash == "" {
 				return ErrArgsRequired("serviceProviderHash")
 			}
 			event.ServiceProviderHash = drawLotteryRequest.ServiceProviderHash

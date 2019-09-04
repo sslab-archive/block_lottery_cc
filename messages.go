@@ -48,9 +48,9 @@ type ParticipateLotteryRequest struct {
 }
 
 type DrawLotteryRequest struct {
-	EventUUID           string `json:"eventUUID"`
-	BlockHash           string `json:"blockHash"`
-	ServiceProviderHash string `json:"serviceProviderHash"`
+	EventUUID           string    `json:"eventUUID"`
+	TargetBlock         BlockInfo `json:"targetBlock"`
+	ServiceProviderHash string    `json:"serviceProviderHash"`
 
 	SubmitterID      string `json:"submitterID"`
 	SubmitterAddress string `json:"submitterAddress"`
