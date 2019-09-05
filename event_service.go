@@ -76,7 +76,6 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 		}
 		event.Participants = make([]Participant, 0)
 
-		events = append(events, *event)
 		participantIterator, err := stubInterface.GetStateByPartialCompositeKey(event.GetKey(), []string{"participants"})
 		if err != nil {
 			participantIterator.Close()
@@ -99,7 +98,11 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 
 			event.Participants = append(event.Participants, *p)
 		}
+
+
+		events = append(events, *event)
 		participantIterator.Close()
+
 	}
 
 	return events, nil
