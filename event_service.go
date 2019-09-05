@@ -74,8 +74,32 @@ func LoadEventByDateRange(stubInterface shim.ChaincodeStubInterface, startDate i
 		if err != nil {
 			return nil, err
 		}
+		event.Participants = make([]Participant, 0)
 
 		events = append(events, *event)
+		participantIterator, err := stubInterface.GetStateByPartialCompositeKey(event.GetKey(), []string{"participants"})
+		if err != nil {
+			participantIterator.Close()
+			return nil, err
+		}
+
+		for participantIterator.HasNext() {
+			b, err := participantIterator.Next()
+			if err != nil {
+				participantIterator.Close()
+				return nil, err
+			}
+
+			p := &Participant{}
+			err = json.Unmarshal(b.Value, p)
+			if err != nil {
+				participantIterator.Close()
+				return nil, err
+			}
+
+			event.Participants = append(event.Participants, *p)
+		}
+		participantIterator.Close()
 	}
 
 	return events, nil
