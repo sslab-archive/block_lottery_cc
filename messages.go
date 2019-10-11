@@ -17,6 +17,8 @@ type CreateLotteryRequest struct {
 	Prizes           []Prize    `json:"prizes"`
 	SubmitterID      string     `json:"submitterID"`
 	SubmitterAddress string     `json:"submitterAddress"`
+	AuthURL          string     `json:"authURL"`
+	AuthParams       []string   `json:"authParams"`
 
 	TargetBlock         BlockInfo `json:"targetBlock"`
 	ServiceProviderHash string    `json:"serviceProviderHash"`

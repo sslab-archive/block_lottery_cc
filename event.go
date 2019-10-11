@@ -53,6 +53,10 @@ type Event struct {
 	// block hash
 	TargetBlock BlockInfo `json:"targetBlock"`
 
+	// auth info
+	AuthURL    string   `json:"authURL"`
+	AuthParams []string `json:"authParams"`
+
 	// service provider hash
 	ServiceProviderHash string `json:"serviceProviderHash"`
 
@@ -217,6 +221,8 @@ func NewEvent(request *CreateLotteryRequest, createEventTX Transaction) Event {
 		DrawTypes:           request.DrawTypes,
 		Prizes:              requestPrize,
 		TargetBlock:         request.TargetBlock,
+		AuthURL:             request.AuthURL,
+		AuthParams:          request.AuthParams,
 		ServiceProviderHash: request.ServiceProviderHash,
 		SeedHash:            "",
 		EventCreateTx:       createEventTX,
