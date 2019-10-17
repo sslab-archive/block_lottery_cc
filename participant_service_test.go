@@ -1,18 +1,30 @@
 package main
 
 import (
+	"testing"
 	"crypto/sha256"
 	"encoding/binary"
+	"fmt"
 	"strconv"
 )
 
-func FisherYatesShuffle(arr []Participant ,randomSource string) []Participant {
+func TestFisherYatesShuffle(t *testing.T) {
 
-	shuffledData := make([]Participant, len(arr))
+	arr := make([]string,0)
+	arr = append(arr, "1")
+	arr = append(arr, "2")
+	arr = append(arr, "3")
+	arr = append(arr, "4")
+
+	shuffledData := make([]string, len(arr))
+
+	randomSource := "testSource"
 
 	for i := 0; i < len(arr); i++ {
 		shuffledData[i] = arr[i]
 	}
+
+	fmt.Println(arr)
 
 	for j := len(arr) - 1; j > 0; j-- {
 		hash := sha256.Sum256([]byte(randomSource+strconv.Itoa(j)))
@@ -23,6 +35,6 @@ func FisherYatesShuffle(arr []Participant ,randomSource string) []Participant {
 		shuffledData[j], shuffledData[k] = shuffledData[k], shuffledData[j]
 	}
 
-	return shuffledData
-}
+	fmt.Println(shuffledData)
 
+}
